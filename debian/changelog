@@ -1,0 +1,5 @@
+serial-tool (1.0) stable; urgency=medium
+
+  * Initial release. 
+
+ -- Evgeny Boger <boger@contactless.ru>  Wed, 04 Mar 2015 03:44:36 +0300
