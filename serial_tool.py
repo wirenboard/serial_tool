@@ -1,4 +1,6 @@
 #!/usr/bin/python
+from __future__ import print_function
+
 import time
 import serial
 import termcolor
@@ -48,16 +50,9 @@ def unhexlify(s):
     return binascii.unhexlify(s)
 
 def hexlify(s):
-    #~ return binascii.hexlify(s)
     return " ".join(binascii.hexlify(c).upper() for c in s)
 
 def main():
-    #~ completer = SimpleCompleter()
-    #~ readline.set_completer(completer.complete)
-    #~ readline.parse_and_bind('tab: complete')
-
-
-
     parser = argparse.ArgumentParser(description='serial_tool - interactive hex serial port console',
                                      add_help=True, formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
@@ -78,27 +73,24 @@ def main():
     parser.add_argument('-t', '--timeout', dest='read_timeout', type=float,
                      help='number of seconds to wait for answer', default=1)
 
+    parser.add_argument('--batch', dest='batch_mode', type=str,
+                     help='Batch mode, argument is hex string to send. Answer is returned to stdout', default=None)
+
     parser.add_argument('port' ,  type=str,
                      help='Serial port to open, i.e. /dev/ttyXXX')
     args = parser.parse_args()
 
     if args.baud not in serial.Serial.BAUDRATES:
-        print termcolor.colored("ERROR:", 'red'), "incorrect baudrate %d" % args.baud
+        print(termcolor.colored("ERROR:", 'red'), "incorrect baudrate %d" % args.baud)
         return 1
 
     if args.parity not in serial.Serial.PARITIES:
-        print termcolor.colored("ERROR:", 'red'), "incorrect parity %d" % args.partity
+        print(termcolor.colored("ERROR:", 'red'), "incorrect parity %s" % args.parity)
         return 1
 
     if args.stop_bits not in serial.Serial.STOPBITS:
-        print termcolor.colored("ERROR:", 'red'), "incorrect stop bits setting %d" % args.stop_bits
+        print(termcolor.colored("ERROR:", 'red'), "incorrect stop bits setting %d" % args.stop_bits)
         return 1
-
-
-
-
-
-
 
 
     # configure the serial connections (the parameters differs on the device you are connecting to)
@@ -110,21 +102,37 @@ def main():
         bytesize=args.data_bits,
     )
 
-    #~ ser.open()
-    #~ ser.isOpen()
-    print "serial_tool on %s: %d %s%s%s" % (
+    if args.batch_mode:
+        do_batch_mode(args, ser)
+    else:
+        do_interactive_mode(args, ser)
+
+def do_batch_mode(args, ser):
+    try:
+        input_hex = unhexlify(args.batch_mode)
+    except TypeError, e:
+        print(termcolor.colored("ERROR: "+ e.message, 'red'), file=sys.stderr)
+    else:
+        ser.write(input_hex)
+        out = ''
+
+        # wait before reading output
+        time.sleep(args.read_timeout)
+        while ser.inWaiting() > 0:
+            out += ser.read(1)
+
+        if out != '':
+
+            print(hexlify(out))
+
+def do_interactive_mode(args, ser):
+    print("serial_tool on %s: %d %s%s%s" % (
             ser.portstr,
             ser.baudrate,
             ser.bytesize,
             ser.parity,
-            ser.stopbits)
-    print 'Enter your commands below in HEX form. \r\nAll characters but 0-9,a-f including spaces are ignored.\r\nPress Control-D or Control-C to leave the application.\r\nPress [Enter] to print received data'
-
-
-    #~ def rx_thread():
-        #~ while 1:
-            #~ if (ser.inWaiting() > 0):
-
+            ser.stopbits))
+    print('Enter your commands below in HEX form. \r\nAll characters but 0-9,a-f including spaces are ignored.\r\nPress Control-D or Control-C to leave the application.\r\nPress [Enter] to print received data')
 
     input=1
     while 1 :
@@ -132,11 +140,9 @@ def main():
         try:
             input = raw_input(termcolor.colored(">> ", 'red',attrs=['bold']))
         except (KeyboardInterrupt, EOFError):
-            print "exiting"
+            print("exiting")
             ser.close()
             return
-
-        #~ completer.add_option(input)
 
         if input == 'exit':
             ser.close()
@@ -145,11 +151,10 @@ def main():
             # send the character to the device
             # (note that I happend a \r\n carriage return and line feed to the characters - this is requested by my device)
 
-
             try:
                 input_hex = unhexlify(input)
             except TypeError, e:
-                print termcolor.colored("ERROR: "+ e.message, 'red')
+                print(termcolor.colored("ERROR: "+ e.message, 'red'))
             else:
 
                 ser.write(input_hex)
@@ -161,8 +166,7 @@ def main():
                     out += ser.read(1)
 
                 if out != '':
-
-                    print termcolor.colored("<< ", 'green', attrs=['bold']) + hexlify(out)
+                    print(termcolor.colored("<< ", 'green', attrs=['bold']) + hexlify(out))
 
 
 if __name__ == '__main__':

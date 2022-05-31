@@ -1,3 +1,9 @@
+serial-tool (1.1.0) stable; urgency=medium
+
+  * support for batch mode (useful in scripts)
+
+ -- Evgeny Boger <boger@contactless.ru>  Thu, 08 Apr 2021 18:09:57 +0300
+
 serial-tool (1.0) stable; urgency=medium
 
   * Initial release. 

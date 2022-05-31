@@ -4,6 +4,7 @@ Section: misc
 Priority: optional
 Standards-Version: 3.9.2
 Build-Depends: debhelper (>= 9), pkg-config
+Homepage: https://github.com/wirenboard/serial_tool/
 
 Package: serial-tool
 Architecture: all
