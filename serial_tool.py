@@ -49,7 +49,7 @@ def unhexlify(s):
 
 
 def hexlify(s):
-    return " ".join(binascii.hexlify(c).upper() for c in s)
+    return " ".join(bytes([c]).hex().upper() for c in s)
 
 
 def main():
@@ -143,12 +143,12 @@ def do_batch_mode(args, ser):
         return 1
     else:
         ser.write(input_hex)
-        out = ""
+        out = bytearray()
 
         # wait before reading output
         time.sleep(args.read_timeout)
         while ser.inWaiting() > 0:
-            out += ser.read(1)
+            out.extend(ser.read(1))
 
         if out != "":
             print(hexlify(out))
@@ -199,12 +199,12 @@ def do_interactive_mode(args, ser):
             else:
 
                 ser.write(input_hex)
-                out = ""
+                out = bytearray()
 
                 # wait before reading output
                 time.sleep(args.read_timeout)
                 while ser.inWaiting() > 0:
-                    out += ser.read(1)
+                    out.extend(ser.read(1))
 
                 if out != "":
                     print(termcolor.colored("<< ", "green", attrs=["bold"]) + hexlify(out))
