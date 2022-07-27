@@ -13,10 +13,10 @@ import serial
 import termcolor
 
 
-class SimpleCompleter(object):
+class SimpleCompleter:
     def __init__(self):
         self.options = set(["exit"])
-        return
+        self.matches = []
 
     def add_option(self, option):
         self.options.add(option)
@@ -130,16 +130,17 @@ def main():
     )
 
     if args.batch_mode:
-        do_batch_mode(args, ser)
+        return do_batch_mode(args, ser)
     else:
-        do_interactive_mode(args, ser)
+        return do_interactive_mode(args, ser)
 
 
 def do_batch_mode(args, ser):
     try:
         input_hex = unhexlify(args.batch_mode)
     except TypeError as e:
-        print(termcolor.colored("ERROR: " + e.message, "red"), file=sys.stderr)
+        print(termcolor.colored("ERROR: " + str(e), "red"), file=sys.stderr)
+        return 1
     else:
         ser.write(input_hex)
         out = ""
@@ -150,39 +151,51 @@ def do_batch_mode(args, ser):
             out += ser.read(1)
 
         if out != "":
-
             print(hexlify(out))
+
+        return 0
 
 
 def do_interactive_mode(args, ser):
     print(
-        "serial_tool on %s: %d %s%s%s" % (ser.portstr, ser.baudrate, ser.bytesize, ser.parity, ser.stopbits)
+        "serial_tool on %s: %d %s%s%s"
+        % (
+            ser.portstr,
+            ser.baudrate,
+            ser.bytesize,
+            ser.parity,
+            ser.stopbits,
+        )
     )
     print(
-        "Enter your commands below in HEX form. \r\nAll characters but 0-9,a-f including spaces are ignored.\r\nPress Control-D or Control-C to leave the application.\r\nPress [Enter] to print received data"
+        "Enter your commands below in HEX form. \r\n"
+        "All characters but 0-9,a-f including spaces are ignored.\r\n"
+        "Press Control-D or Control-C to leave the application.\r\n"
+        "Press [Enter] to print received data"
     )
 
-    input = 1
+    input_str = 1
     while 1:
         # get keyboard input
         try:
-            input = raw_input(termcolor.colored(">> ", "red", attrs=["bold"]))
+            input_str = input(termcolor.colored(">> ", "red", attrs=["bold"]))
         except (KeyboardInterrupt, EOFError):
             print("exiting")
             ser.close()
             return
 
-        if input == "exit":
+        if input_str == "exit":
             ser.close()
             return
         else:
             # send the character to the device
-            # (note that I happend a \r\n carriage return and line feed to the characters - this is requested by my device)
+            # (note that I happend a \r\n carriage return
+            # and line feed to the characters - this is requested by my device)
 
             try:
-                input_hex = unhexlify(input)
+                input_hex = unhexlify(input_str)
             except TypeError as e:
-                print(termcolor.colored("ERROR: " + e.message, "red"))
+                print(termcolor.colored("ERROR: " + str(e), "red"))
             else:
 
                 ser.write(input_hex)

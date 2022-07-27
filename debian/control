@@ -8,5 +8,5 @@ Homepage: https://github.com/wirenboard/serial_tool/
 
 Package: serial-tool
 Architecture: all
-Depends: ${shlibs:Depends}, ${misc:Depends}, python-serial, python-termcolor
+Depends: ${shlibs:Depends}, ${misc:Depends}, python3-serial, python3-termcolor
 Description: interactive hex serial port console
