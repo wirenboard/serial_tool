@@ -150,7 +150,7 @@ def do_batch_mode(args, ser):
         while ser.inWaiting() > 0:
             out.extend(ser.read(1))
 
-        if out != "":
+        if len(out) > 0:
             print(hexlify(out))
 
         return 0
@@ -206,7 +206,7 @@ def do_interactive_mode(args, ser):
                 while ser.inWaiting() > 0:
                     out.extend(ser.read(1))
 
-                if out != "":
+                if len(out) > 0:
                     print(termcolor.colored("<< ", "green", attrs=["bold"]) + hexlify(out))
 
 
