@@ -1,3 +1,9 @@
+serial-tool (1.2.1) stable; urgency=medium
+
+  * Handle serial exceptions
+
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Mon, 27 May 2024 15:10:00 +0400
+
 serial-tool (1.2.0) stable; urgency=medium
 
   * python3 port
