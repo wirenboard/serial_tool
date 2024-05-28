@@ -120,19 +120,23 @@ def main():
         print(termcolor.colored("ERROR:", "red"), "incorrect stop bits setting %d" % args.stop_bits)
         return 1
 
-    # configure the serial connections (the parameters differs on the device you are connecting to)
-    ser = serial.Serial(
-        port=args.port,
-        baudrate=args.baud,
-        parity=args.parity,
-        stopbits=args.stop_bits,
-        bytesize=args.data_bits,
-    )
+    try:
+        # configure the serial connections (the parameters differs on the device you are connecting to)
+        ser = serial.Serial(
+            port=args.port,
+            baudrate=args.baud,
+            parity=args.parity,
+            stopbits=args.stop_bits,
+            bytesize=args.data_bits,
+        )
 
-    if args.batch_mode:
-        return do_batch_mode(args, ser)
-    else:
-        return do_interactive_mode(args, ser)
+        if args.batch_mode:
+            return do_batch_mode(args, ser)
+        else:
+            return do_interactive_mode(args, ser)
+    except serial.serialutil.SerialException as e:
+        print(termcolor.colored("ERROR: " + str(e), "red"), file=sys.stderr)
+        return 1
 
 
 def do_batch_mode(args, ser):
