@@ -1,12 +1,13 @@
 Source: serial-tool
-Maintainer: Evgeny Boger <boger@contactless.ru>
+Maintainer: Wiren Board team <info@wirenboard.com>
 Section: misc
 Priority: optional
-Standards-Version: 3.9.2
+Standards-Version: 4.5.1
 Build-Depends: debhelper (>= 9), pkg-config
 Homepage: https://github.com/wirenboard/serial_tool/
 
 Package: serial-tool
 Architecture: all
-Depends: ${shlibs:Depends}, ${misc:Depends}, python3-serial, python3-termcolor
+Depends: ${shlibs:Depends}, ${misc:Depends}, python3, python3-serial, python3-termcolor
 Description: interactive hex serial port console
+ Small command-line interactive tool to send and receive data through serial port.

@@ -1,3 +1,9 @@
+serial-tool (1.2.2) stable; urgency=medium
+
+  * Fix lintian
+
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Tue, 22 Apr 2025 13:10:00 +0400
+
 serial-tool (1.2.1) stable; urgency=medium
 
   * Handle serial exceptions
