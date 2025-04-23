@@ -1,11 +1,12 @@
+PREFIX = /usr
+
 .PHONY: all clean
 
 all:
-clean :
+	-@echo do nothing
 
-install: all
-	install -m 0755 serial_tool.py  $(DESTDIR)/usr/bin/serial_tool
+clean:
+	-@echo do nothing
 
-
-
-
+install:
+	install -Dm0755 serial_tool.py $(DESTDIR)$(PREFIX)/bin/serial_tool
