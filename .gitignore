@@ -55,3 +55,6 @@ target/
 debian/serial-tool/
 debian/files
 debian/*.substvars
+
+# Env
+.venv
