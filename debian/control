@@ -3,7 +3,7 @@ Maintainer: Wiren Board team <info@wirenboard.com>
 Section: misc
 Priority: optional
 Standards-Version: 4.5.1
-Build-Depends: debhelper (>= 9), pkg-config
+Build-Depends: debhelper (>= 9), pkg-config, python3-termcolor
 Homepage: https://github.com/wirenboard/serial_tool/
 
 Package: serial-tool
