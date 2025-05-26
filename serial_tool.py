@@ -2,7 +2,6 @@
 
 import argparse
 import binascii
-import logging
 import os.path
 import re
 import readline
@@ -66,7 +65,7 @@ def main():
         "--parity",
         dest="parity",
         type=str,
-        help="set parity, one of [%s]" % ", ".join(serial.Serial.PARITIES),
+        help=f"set parity, one of [{', '.join(serial.Serial.PARITIES)}]",
         default="N",
     )
 
@@ -84,7 +83,7 @@ def main():
         "--stop-bits",
         dest="stop_bits",
         type=float,
-        help="set number of stop bits, one of [%s]" % ", ".join(str(x) for x in serial.Serial.STOPBITS),
+        help=f"set number of stop bits, one of [{', '.join(serial.Serial.STOPBITS)}]",
         default=1,
     )
 
@@ -109,15 +108,15 @@ def main():
     args = parser.parse_args()
 
     if args.baud not in serial.Serial.BAUDRATES:
-        print(termcolor.colored("ERROR:", "red"), "incorrect baudrate %d" % args.baud)
+        print(termcolor.colored("ERROR:", "red"), f"incorrect baudrate {args.baud}")
         return 1
 
     if args.parity not in serial.Serial.PARITIES:
-        print(termcolor.colored("ERROR:", "red"), "incorrect parity %s" % args.parity)
+        print(termcolor.colored("ERROR:", "red"), f"incorrect parity {args.parity}")
         return 1
 
     if args.stop_bits not in serial.Serial.STOPBITS:
-        print(termcolor.colored("ERROR:", "red"), "incorrect stop bits setting %d" % args.stop_bits)
+        print(termcolor.colored("ERROR:", "red"), f"incorrect stop bits setting {args.stop_bits}")
         return 1
 
     try:
@@ -132,8 +131,7 @@ def main():
 
         if args.batch_mode:
             return do_batch_mode(args, ser)
-        else:
-            return do_interactive_mode(args, ser)
+        return do_interactive_mode(args, ser)
     except serial.serialutil.SerialException as e:
         print(termcolor.colored("ERROR: " + str(e), "red"), file=sys.stderr)
         return 1
@@ -145,32 +143,23 @@ def do_batch_mode(args, ser):
     except TypeError as e:
         print(termcolor.colored("ERROR: " + str(e), "red"), file=sys.stderr)
         return 1
-    else:
-        ser.write(input_hex)
-        out = bytearray()
 
-        # wait before reading output
-        time.sleep(args.read_timeout)
-        while ser.inWaiting() > 0:
-            out.extend(ser.read(1))
+    ser.write(input_hex)
+    out = bytearray()
 
-        if len(out) > 0:
-            print(hexlify(out))
+    # wait before reading output
+    time.sleep(args.read_timeout)
+    while ser.inWaiting() > 0:
+        out.extend(ser.read(1))
 
-        return 0
+    if len(out) > 0:
+        print(hexlify(out))
+
+    return 0
 
 
 def do_interactive_mode(args, ser):
-    print(
-        "serial_tool on %s: %d %s%s%s"
-        % (
-            ser.portstr,
-            ser.baudrate,
-            ser.bytesize,
-            ser.parity,
-            ser.stopbits,
-        )
-    )
+    print(f"serial_tool on {ser.portstr}: {ser.baudrate} {ser.bytesize}{ser.parity}{ser.stopbits}")
     print(
         "Enter your commands below in HEX form. \r\n"
         "All characters but 0-9,a-f including spaces are ignored.\r\n"
@@ -191,27 +180,27 @@ def do_interactive_mode(args, ser):
         if input_str == "exit":
             ser.close()
             return
+
+        # send the character to the device
+        # (note that I happend a \r\n carriage return
+        # and line feed to the characters - this is requested by my device)
+
+        try:
+            input_hex = unhexlify(input_str)
+        except TypeError as e:
+            print(termcolor.colored("ERROR: " + str(e), "red"))
         else:
-            # send the character to the device
-            # (note that I happend a \r\n carriage return
-            # and line feed to the characters - this is requested by my device)
 
-            try:
-                input_hex = unhexlify(input_str)
-            except TypeError as e:
-                print(termcolor.colored("ERROR: " + str(e), "red"))
-            else:
+            ser.write(input_hex)
+            out = bytearray()
 
-                ser.write(input_hex)
-                out = bytearray()
+            # wait before reading output
+            time.sleep(args.read_timeout)
+            while ser.inWaiting() > 0:
+                out.extend(ser.read(1))
 
-                # wait before reading output
-                time.sleep(args.read_timeout)
-                while ser.inWaiting() > 0:
-                    out.extend(ser.read(1))
-
-                if len(out) > 0:
-                    print(termcolor.colored("<< ", "green", attrs=["bold"]) + hexlify(out))
+            if len(out) > 0:
+                print(termcolor.colored("<< ", "green", attrs=["bold"]) + hexlify(out))
 
 
 if __name__ == "__main__":
