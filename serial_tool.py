@@ -83,7 +83,7 @@ def main():
         "--stop-bits",
         dest="stop_bits",
         type=float,
-        help=f"set number of stop bits, one of [{', '.join(serial.Serial.STOPBITS)}]",
+        help=f"set number of stop bits, one of [{', '.join(map(str, serial.Serial.STOPBITS))}]",
         default=1,
     )
 
