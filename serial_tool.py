@@ -129,7 +129,7 @@ def main():
             bytesize=args.data_bits,
         )
 
-        if args.batch_mode:
+        if args.batch_mode is not None:
             return do_batch_mode(args, ser)
         return do_interactive_mode(args, ser)
     except serial.serialutil.SerialException as e:
