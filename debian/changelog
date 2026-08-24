@@ -1,6 +1,7 @@
 serial-tool (1.2.5) stable; urgency=medium
 
   * Report malformed hex input instead of crashing
+  * Validate data bits setting
   * Do not enter interactive mode on an empty --batch argument
 
  -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Fri, 21 Aug 2026 12:00:00 +0400

@@ -51,6 +51,23 @@ def hexlify(s):
     return " ".join(bytes([c]).hex().upper() for c in s)
 
 
+def check_port_settings(args):
+    """Return a message describing the first unsupported port setting, if any."""
+    if args.baud not in serial.Serial.BAUDRATES:
+        return f"incorrect baudrate {args.baud}"
+
+    if args.parity not in serial.Serial.PARITIES:
+        return f"incorrect parity {args.parity}"
+
+    if args.stop_bits not in serial.Serial.STOPBITS:
+        return f"incorrect stop bits setting {args.stop_bits}"
+
+    if args.data_bits not in serial.Serial.BYTESIZES:
+        return f"incorrect number of data bits {args.data_bits}"
+
+    return None
+
+
 def main():
     parser = argparse.ArgumentParser(
         description="serial_tool - interactive hex serial port console",
@@ -107,16 +124,9 @@ def main():
     parser.add_argument("port", type=str, help="Serial port to open, i.e. /dev/ttyXXX")
     args = parser.parse_args()
 
-    if args.baud not in serial.Serial.BAUDRATES:
-        print(termcolor.colored("ERROR:", "red"), f"incorrect baudrate {args.baud}")
-        return 1
-
-    if args.parity not in serial.Serial.PARITIES:
-        print(termcolor.colored("ERROR:", "red"), f"incorrect parity {args.parity}")
-        return 1
-
-    if args.stop_bits not in serial.Serial.STOPBITS:
-        print(termcolor.colored("ERROR:", "red"), f"incorrect stop bits setting {args.stop_bits}")
+    settings_error = check_port_settings(args)
+    if settings_error:
+        print(termcolor.colored("ERROR:", "red"), settings_error)
         return 1
 
     try:
