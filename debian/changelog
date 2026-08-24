@@ -1,3 +1,9 @@
+serial-tool (1.2.5) stable; urgency=medium
+
+  * Report malformed hex input instead of crashing
+
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Fri, 21 Aug 2026 12:00:00 +0400
+
 serial-tool (1.2.4) stable; urgency=medium
 
   * Fix launch error

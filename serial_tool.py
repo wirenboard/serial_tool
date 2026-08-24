@@ -140,7 +140,7 @@ def main():
 def do_batch_mode(args, ser):
     try:
         input_hex = unhexlify(args.batch_mode)
-    except TypeError as e:
+    except binascii.Error as e:
         print(termcolor.colored("ERROR: " + str(e), "red"), file=sys.stderr)
         return 1
 
@@ -187,7 +187,7 @@ def do_interactive_mode(args, ser):
 
         try:
             input_hex = unhexlify(input_str)
-        except TypeError as e:
+        except binascii.Error as e:
             print(termcolor.colored("ERROR: " + str(e), "red"))
         else:
 
